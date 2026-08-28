@@ -68,8 +68,8 @@ test('payment return stores, verifies, and offers the extension token', async ({
   expect(stored).toBe('test-token');
 });
 
-test('home and legal pages have no serious accessibility violations', async ({ page }) => {
-  for (const path of ['/', '/privacy/', '/terms/']) {
+test('home, legal, and not-found pages have no serious accessibility violations', async ({ page }) => {
+  for (const path of ['/', '/404.html', '/privacy/', '/terms/']) {
     await page.goto(path);
     const results = await new AxeBuilder({ page }).analyze();
     expect(results.violations.filter((violation) => ['serious', 'critical'].includes(violation.impact ?? ''))).toEqual([]);
@@ -86,7 +86,7 @@ test('layout fits the 390px viewport', async ({ page }, testInfo) => {
   await expect(page.getByRole('heading', { level: 1 })).toBeVisible();
   await expect(page.getByRole('link', { name: /Download for Chrome/ })).toBeVisible();
 
-  for (const path of ['/', '/privacy/', '/terms/']) {
+  for (const path of ['/', '/404.html', '/privacy/', '/terms/']) {
     await page.goto(path);
     const undersized = await page.locator('a, button').evaluateAll((elements) => elements.flatMap((element) => {
       const rect = element.getBoundingClientRect();
