@@ -1,0 +1,9 @@
+{
+  "generator": "/opt/fleet/lib/gen-image.sh",
+  "deployment": "factory-image",
+  "date": "2026-08-28",
+  "size": "1536x1024",
+  "quality": "high",
+  "prompt": "A wide landing-page hero illustration of a physical code-review workbench: stacked paper timeline cards, simplified terminal panes, red and green diff strips, black annotation arrows and one oversized acid-yellow hypothesis tab. No people. Tactile cut-paper editorial diorama with screen-printed ink, slightly imperfect paper edges, crisp neo-brutalist geometry. Shallow isometric product view, central stack with breathing room at the edges, hard overhead studio lighting and short graphic shadows, warm paper, carbon black, evidence cyan and failure coral. No readable text, no letters, no logos, no brands, no watermark, no gradients, no glassmorphism, no purple.",
+  "review": "Accepted. No people, brand marks, readable text, watermark, broken geometry, or misleading UI claims observed."
+}
