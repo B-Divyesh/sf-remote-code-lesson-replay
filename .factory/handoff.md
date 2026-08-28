@@ -1,44 +1,41 @@
-# Handoff — Code Lesson Replay
+# Handoff — independent verification
 
-## What was built
+## Result: FAIL
 
-- A WXT + TypeScript Manifest V3 extension with a small popup and a full-tab local replay studio.
-- End-to-end student flow: start a session; record an opt-in command/output, file snapshot diff, or note; attach hypotheses and learning annotations; replay by timeline or arrow keys; import/export a versioned JSON bundle.
-- Privacy controls: common secret redaction before persistence, temporary per-step custom masks, explicit private-command gaps, no page/content-script access, no audio/video/screen/keystroke capture, and browser-local storage only.
-- Tutor handling: preserved before/after snapshots, result labels, text playback, invalid/oversized bundle errors, empty states, delete confirmation, and local-save quota feedback.
-- $19 one-time Plus flow through the Sociobot test billing API: hosted checkout, URL token capture/stripping, once-per-day cached verification, offline cached verdict, invalid/revoked state, purchase restoration, and token transfer from the return page to the extension. Core capture, masking, playback, and export are free.
-- Responsive static launch site with `/privacy/`, `/terms/`, offline service worker, CSP/security headers, sitemap, robots file, and the packaged extension at `/downloads/code-lesson-replay.zip`.
-- Product-specific neo-brutalist “annotated bench sheet” design. The original hero was generated with the Factory Azure image deployment; the source, prompt metadata, and 46 KB AVIF / 91 KB WebP derivatives are included.
+Candidate `252675ad663f7d980007b5e715c6cbc791f94b6f` was independently tested on 2026-08-28 UTC against <https://remote-code-lesson-replay.sociobot.in>.
 
-## Scope decision
+The repository is cleanly buildable and the locally packaged extension completes the core replay job, but the live release is not acceptable:
 
-The researched smallest product named a native VS Code extension, while the binding work order required WXT + MV3. A browser extension cannot use documented desktop VS Code APIs. This build therefore implements the closest honest, useful version: a student-controlled capture studio that can sit beside any editor (including `vscode.dev`) and never claims automatic IDE capture. A future native VS Code companion can emit the same `code-lesson-replay/v1` bundle without changing tutor playback.
+- **Critical:** `/downloads/code-lesson-replay.zip` returns `404 text/html`, so users cannot install the product. The candidate build does produce the expected 162.24 KB ZIP locally.
+- **High:** a fresh-install offline reload lacks the hashed CSS/JS; the service worker returns HTML for those asset failures, leaving an unstyled, non-interactive page with MIME console errors.
+- **High:** the production site and extension package still use `pilot-api.sociobot.in` for the advertised $19 checkout and license verification.
+- **Medium:** malformed import on the extension's initial empty screen fails silently.
+- **Medium:** extension tabs do not implement arrow-key movement and lose focus after keyboard activation.
+- **Medium:** several mobile links/brand targets are smaller than 44 × 44 px.
+- **Medium:** hashed live assets use 30-second revalidation rather than long-lived immutable caching; AVIF is served as `application/octet-stream`.
+- **Low:** whitespace-only replay titles create an empty stored title and empty `<h1>`.
 
-## Run and verify
+Full evidence, checksums, reproduction details, accessibility/performance results, and retest criteria are in [`.factory/verification.md`](verification.md).
 
-```sh
-npm ci
-npm test
-npm run typecheck
-npm run build
-npm audit --audit-level=high
-```
+## What passed
 
-`npm run build` is the work-order build command. Static deployment output is exactly `dist/site`, with `index.html` at its root. The same command packages the extension at `dist/site/downloads/code-lesson-replay.zip`.
+- `npm ci`
+- `npm test`: 6 unit tests and 10 Playwright cases passed; 2 expected mobile-extension skips
+- `npm run typecheck`
+- `npm audit --audit-level=high`: 0 vulnerabilities
+- exact `npm run build`: produced `dist/site` and the extension ZIP
+- extracted production ZIP loaded in a clean Chromium profile; popup-to-studio launch, local persistence, masking, command exclusion, diffs, playback, export, import recovery, 5 MB/500-step limits, mobile layout, and reduced motion were exercised
+- axe: 0 serious/critical findings on live pages, popup, and populated studio
+- Lighthouse mobile: 97 performance, 100 accessibility, 100 best practices, 100 SEO; LCP 1.1 s, TBT 190 ms, CLS 0
+- normal online live load: no console/page errors, no unsolicited third-party requests
+- security/privacy headers and local-first extension permissions are appropriately constrained
+- live home/legal pages, JS, CSS, AVIF, and service worker match the candidate build byte-for-byte
 
-Verification completed on 2026-08-28:
+## Required next steps
 
-- Unit tests: replay schema/validation, secret masking, filename safety, and diff behavior pass.
-- Playwright 1.58.2: desktop Chromium and 390 × 844 mobile site journeys pass; the unpacked MV3 journey creates a replay, removes test secrets before rendering/storage, creates a file diff, verifies a mocked license, and reports zero console errors.
-- axe 4.10.2: zero serious or critical findings on home, privacy, terms, and populated extension studio.
-- Production build: extension JavaScript 23.7 KB total, extension CSS 15.0 KB, site JavaScript 4.2 KB, site CSS 9.7 KB, hero AVIF 45.9 KB, hero WebP 90.9 KB, packaged ZIP 162.2 KB.
-- Lighthouse mobile on the final production preview: Performance 100, Accessibility 100, Best Practices 100, SEO 100; FCP 1.0 s, LCP 1.3 s, CLS 0, total blocking time 0 ms, speed index 1.0 s.
-- `npm audit --audit-level=high`: 0 vulnerabilities.
+1. Correct the static deployment so the built ZIP is available at `/downloads/code-lesson-replay.zip` with the proper MIME type, then download, extract, and load that live artifact in a clean browser.
+2. Release-build with `VITE_BILLING_BASE=https://api.sociobot.in` and verify the production checkout return/restore flow.
+3. Version and precache built CSS/JS; do not fall back to HTML for missing asset requests. Retest offline in a fresh profile after clearing the ordinary browser cache.
+4. Render import errors in the empty state, repair tab keyboard/focus behavior, enlarge mobile targets, reject trimmed-empty titles, and configure immutable caching/MIME metadata.
 
-## Known gaps / next steps
-
-- The factory still needs to register the billing product and set `VITE_BILLING_BASE=https://api.sociobot.in` for release; staging intentionally defaults to `pilot-api.sociobot.in`.
-- Chrome Web Store signing/publishing and DNS deployment are outside this repository.
-- Automated masking cannot identify every secret. The UI and policy tell students to exclude private commands and inspect exports.
-- A future native VS Code companion could capture opt-in task/terminal events through documented IDE APIs and write the existing bundle schema. No DOM scraping workaround was added.
-- The JSON schema is documented in TypeScript but not yet published as a standalone JSON Schema file.
+No product code was modified during verification; only these factory reports were changed.
