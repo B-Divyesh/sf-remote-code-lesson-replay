@@ -33,13 +33,13 @@ h2 { margin-bottom: 8px; font-size: clamp(1.35rem, 2vw, 1.75rem); line-height: 1
 h3 { margin-bottom: 6px; font-size: 1rem; }
 mark { padding: 0 .12em; color: inherit; background: var(--signal); box-decoration-break: clone; }
 
-.skip-link { position: fixed; z-index: 100; top: 8px; left: 8px; padding: 10px 14px; border: var(--border); background: var(--white); transform: translateY(-150%); }
+.skip-link { position: fixed; z-index: 100; top: 8px; left: 8px; min-height: 44px; padding: 10px 14px; border: var(--border); background: var(--white); transform: translateY(-150%); }
 .skip-link:focus { transform: translateY(0); }
 :focus-visible { outline: 3px solid var(--blue); outline-offset: 3px; }
 .sr-only, .visually-hidden { position: absolute !important; width: 1px !important; height: 1px !important; padding: 0 !important; margin: -1px !important; overflow: hidden !important; clip: rect(0,0,0,0) !important; white-space: nowrap !important; border: 0 !important; }
 
 .app-header { position: sticky; z-index: 20; top: 0; display: flex; align-items: center; justify-content: space-between; gap: 16px; min-height: 68px; padding: 10px clamp(16px, 4vw, 56px); border-bottom: 3px solid var(--ink); background: rgba(244,240,230,.96); }
-.brand { display: inline-flex; align-items: center; gap: 10px; font-family: "Arial Black", Arial, sans-serif; font-size: 15px; text-decoration: none; }
+.brand { display: inline-flex; align-items: center; min-width: 44px; min-height: 44px; gap: 10px; font-family: "Arial Black", Arial, sans-serif; font-size: 15px; text-decoration: none; }
 .brand img { border: 1px solid var(--ink); border-radius: 5px; }
 .header-actions { display: flex; align-items: center; gap: 12px; }
 .local-pill { display: inline-flex; align-items: center; min-height: 32px; padding: 4px 10px; border: 1px solid var(--ink); background: var(--cyan); font-size: 12px; font-weight: 800; text-transform: uppercase; }
@@ -93,6 +93,7 @@ input[aria-invalid="true"] { border-color: #a72e1c; box-shadow: inset 0 0 0 1px 
 .notice-success { background: #d7f2e2; }
 .notice-error { background: #ffe1dc; }
 .notice button { min-width: 44px; min-height: 44px; border: 0; background: transparent; font-size: 24px; cursor: pointer; }
+#app > main:not(.studio) > .notice { width: min(1180px, calc(100% - 32px)); margin: 20px auto 0; }
 .work-grid { display: grid; grid-template-columns: minmax(0, .9fr) minmax(0, 1.1fr); border: 3px solid var(--ink); background: var(--white); box-shadow: 9px 9px 0 var(--ink); }
 .capture-panel, .play-panel { min-width: 0; padding: clamp(20px, 3vw, 36px); }
 .capture-panel { border-right: 3px solid var(--ink); }
@@ -160,6 +161,7 @@ summary { min-height: 44px; padding: 10px 0; font-weight: 800; cursor: pointer; 
 footer { display: flex; align-items: center; justify-content: space-between; gap: 24px; padding: 28px clamp(16px, 4vw, 56px); border-top: 3px solid var(--ink); background: var(--ink); color: var(--white); font-size: 13px; }
 footer p { margin: 0; }
 footer > div { display: flex; align-items: center; gap: 20px; }
+footer a { display: inline-flex; align-items: center; justify-content: center; min-width: 44px; min-height: 44px; }
 
 dialog { width: min(560px, calc(100% - 32px)); padding: 32px; border: 3px solid var(--ink); background: var(--paper); box-shadow: 10px 10px 0 var(--ink); }
 dialog::backdrop { background: rgba(23,23,19,.72); }

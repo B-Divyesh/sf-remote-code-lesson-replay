@@ -52,11 +52,7 @@ The exact production build command is `npm run build`. It produces:
 - `dist/site/downloads/code-lesson-replay.zip` — installable MV3 extension package.
 - `.output/chrome-mv3/` — unpacked extension for local testing.
 
-The staging billing endpoint is the default. Release builds can switch it without source edits:
-
-```sh
-VITE_BILLING_BASE=https://api.sociobot.in npm run build
-```
+Release builds use `https://api.sociobot.in` for checkout and license verification. No payment-provider credentials are embedded in the site or extension.
 
 The product slug is used in the checkout and verification paths; no billing product ID or provider secret is embedded.
 
@@ -78,7 +74,7 @@ Automated masking is defense in depth, not a complete secret scanner. Keep priva
 
 ## Deployment
 
-Deploy `dist/site` as a static site. Do not deploy the repository root. The included `staticwebapp.config.json` sets the SPA fallback and security headers. The factory owns DNS, billing registration, and the production billing-base switch.
+Deploy `dist/site` as a static site. Do not deploy the repository root. Both `npm run build` and the work-order-facing `npm run build:site` create the complete directory, including the extension ZIP and a versioned offline worker. The included `staticwebapp.config.json` sets the navigation fallback, security headers, immutable asset caching, and AVIF/ZIP MIME types. The factory owns DNS and billing registration.
 
 ## License
 

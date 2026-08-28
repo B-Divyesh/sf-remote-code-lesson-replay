@@ -144,10 +144,12 @@ export function createLineDiff(before: string, after: string): DiffLine[] {
 }
 
 export function newSession(title: string, student = '', goal = ''): ReplaySession {
+  const cleanTitle = title.trim();
+  if (!cleanTitle) throw new Error('Enter a replay title with at least one visible character.');
   const now = new Date().toISOString();
   return {
     id: crypto.randomUUID(),
-    title: title.trim(),
+    title: cleanTitle,
     student: student.trim(),
     goal: goal.trim(),
     createdAt: now,
@@ -200,7 +202,7 @@ export function parseBundle(raw: string): ReplayBundle {
   if (bundle.schema !== REPLAY_SCHEMA || bundle.generator !== 'Code Lesson Replay' || !session) {
     throw new Error('This is not a Code Lesson Replay v1 bundle.');
   }
-  if (!isString(bundle.exportedAt) || !isString(session.id) || !isString(session.title) || !isString(session.student) || !isString(session.goal) || !isString(session.createdAt) || !isString(session.updatedAt) || session.source !== 'manual-opt-in' || !Array.isArray(session.steps)) {
+  if (!isString(bundle.exportedAt) || !isString(session.id) || !isString(session.title) || !session.title.trim() || !isString(session.student) || !isString(session.goal) || !isString(session.createdAt) || !isString(session.updatedAt) || session.source !== 'manual-opt-in' || !Array.isArray(session.steps)) {
     throw new Error('The replay bundle is missing required session details.');
   }
   if (session.steps.length > 500) throw new Error('This replay has more than 500 steps and cannot be opened safely.');

@@ -8,3 +8,4 @@ graphify-out/
 .wxt/
 test-results/
 playwright-report/
+.factory/evidence/

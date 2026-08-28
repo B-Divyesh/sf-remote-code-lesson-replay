@@ -10,7 +10,6 @@ export default defineConfig({
     version: '1.0.0',
     permissions: ['storage'],
     host_permissions: [
-      'https://pilot-api.sociobot.in/*',
       'https://api.sociobot.in/*'
     ],
     action: {

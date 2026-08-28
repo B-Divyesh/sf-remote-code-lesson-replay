@@ -1,6 +1,6 @@
 export const PRODUCT_SLUG = 'remote-code-lesson-replay';
 export const PRICE_LABEL = '$19 one-time';
-export const BILLING_BASE = (import.meta.env.VITE_BILLING_BASE as string | undefined) ?? 'https://pilot-api.sociobot.in';
+export const BILLING_BASE = 'https://api.sociobot.in';
 export const CHECKOUT_URL = `${BILLING_BASE}/api/v1/products/${PRODUCT_SLUG}/checkout`;
 
 const LICENSE_KEY = `sb_license:${PRODUCT_SLUG}`;

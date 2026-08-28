@@ -40,6 +40,12 @@ function setNotice(message: string, tone: typeof noticeTone = 'info'): void {
   noticeTone = tone;
 }
 
+function renderNotice(): string {
+  if (!notice) return '';
+  const role = noticeTone === 'error' ? 'alert' : 'status';
+  return `<div class="notice notice-${noticeTone}" role="${role}">${escapeHtml(notice)}<button type="button" data-action="dismiss" aria-label="Dismiss notice">×</button></div>`;
+}
+
 function displayDate(iso: string): string {
   return new Intl.DateTimeFormat(undefined, { dateStyle: 'medium', timeStyle: 'short' }).format(new Date(iso));
 }
@@ -137,13 +143,17 @@ function renderLicenseDialog(): string {
 }
 
 function renderEmpty(): string {
-  return `<header class="app-header"><a class="brand" href="https://remote-code-lesson-replay.sociobot.in" target="_blank"><img src="/icons/icon-48.png" width="40" height="40" alt="" />Code Lesson Replay</a><span class="local-pill">Local only</span></header><main id="main" class="empty-main"><section class="empty-copy"><span class="eyebrow">Student-controlled capture</span><h1>Record the reasoning.<br /><mark>Skip the surveillance.</mark></h1><p>Build a short trail of commands, chosen output, named file diffs and hypotheses for your tutor. Nothing is recorded automatically.</p><ul class="promise-list"><li><strong>Opt in</strong> to every step</li><li><strong>Mask secrets</strong> before storage</li><li><strong>Export one file</strong> for your tutor</li></ul></section><section class="start-sheet" aria-labelledby="start-title"><span class="sheet-number">01 / start</span><h2 id="start-title">New replay</h2><form id="new-session-form"><label>Replay title<input name="title" required autofocus placeholder="Debugging the cart total" /></label><label>Student name <span class="optional">optional</span><input name="student" autocomplete="off" /></label><label>Goal <span class="optional">optional</span><textarea name="goal" rows="3" placeholder="Find why the total doubles after removing an item"></textarea></label><button class="button primary" type="submit">Start private replay</button></form><div class="or"><span>or</span></div><label class="button secondary file-button">Open a tutor bundle<input class="visually-hidden" data-import type="file" accept=".json,.lesson-replay.json,application/json" /></label><p class="microcopy">Stored only in this browser extension. No account, audio, webcam or keystroke capture.</p></section></main>${renderLicenseDialog()}`;
+  return `<header class="app-header"><a class="brand" href="https://remote-code-lesson-replay.sociobot.in" target="_blank"><img src="/icons/icon-48.png" width="40" height="40" alt="" />Code Lesson Replay</a><span class="local-pill">Local only</span></header><main id="main">${renderNotice()}<div class="empty-main"><section class="empty-copy"><span class="eyebrow">Student-controlled capture</span><h1>Record the reasoning.<br /><mark>Skip the surveillance.</mark></h1><p>Build a short trail of commands, chosen output, named file diffs and hypotheses for your tutor. Nothing is recorded automatically.</p><ul class="promise-list"><li><strong>Opt in</strong> to every step</li><li><strong>Mask secrets</strong> before storage</li><li><strong>Export one file</strong> for your tutor</li></ul></section><section class="start-sheet" aria-labelledby="start-title"><span class="sheet-number">01 / start</span><h2 id="start-title">New replay</h2><form id="new-session-form"><label>Replay title<input name="title" required autofocus placeholder="Debugging the cart total" /></label><label>Student name <span class="optional">optional</span><input name="student" autocomplete="off" /></label><label>Goal <span class="optional">optional</span><textarea name="goal" rows="3" placeholder="Find why the total doubles after removing an item"></textarea></label><button class="button primary" type="submit">Start private replay</button></form><div class="or"><span>or</span></div><label class="button secondary file-button">Open a tutor bundle<input class="visually-hidden" data-import type="file" accept=".json,.lesson-replay.json,application/json" /></label><p class="microcopy">Stored only in this browser extension. No account, audio, webcam or keystroke capture.</p></section></div></main>${renderLicenseDialog()}`;
 }
 
 function renderStudio(): string {
   if (!session) return renderEmpty();
   const step = session.steps[selected];
-  return `<header class="app-header"><a class="brand" href="#main"><img src="/icons/icon-48.png" width="40" height="40" alt="" />Code Lesson Replay</a><div class="header-actions"><span class="local-pill">Saved locally</span><button class="button secondary compact" data-action="new">New</button><button class="button primary compact" data-action="export" ${session.steps.length ? '' : 'disabled'}>Export bundle</button></div></header><main id="main" class="studio"><section class="session-head"><div><span class="eyebrow">Current replay · ${escapeHtml(session.student || 'student')}</span><h1>${escapeHtml(session.title)}</h1><p>${escapeHtml(session.goal || 'Capture the decision trail, one chosen step at a time.')}</p></div><div class="session-stats"><strong>${session.steps.length}</strong><span>${session.steps.length === 1 ? 'step' : 'steps'}</span></div></section>${notice ? `<div class="notice notice-${noticeTone}" role="status">${escapeHtml(notice)}<button type="button" data-action="dismiss" aria-label="Dismiss notice">×</button></div>` : ''}<section class="work-grid"><div class="capture-panel"><div class="panel-heading"><div><span class="eyebrow">Student desk</span><h2>Add only what matters</h2></div><span class="privacy-mark">● opt-in</span></div><div class="tabs" role="tablist" aria-label="Step type"><button role="tab" aria-selected="${captureKind === 'command'}" data-kind="command">Command</button><button role="tab" aria-selected="${captureKind === 'file'}" data-kind="file">File diff</button><button role="tab" aria-selected="${captureKind === 'note'}" data-kind="note">Note</button></div>${renderCaptureForm()}</div><div class="play-panel"><div class="panel-heading"><div><span class="eyebrow">Tutor playback</span><h2>Decision trail</h2></div>${session.steps.length ? `<span class="step-counter">${selected + 1} / ${session.steps.length}</span>` : ''}</div>${session.steps.length ? `<div class="timeline" aria-label="Replay steps">${session.steps.map((item, index) => `<button type="button" data-select="${index}" aria-current="${index === selected ? 'step' : 'false'}" aria-label="Step ${index + 1}: ${escapeHtml(stepLabel(item))}"><span>${String(index + 1).padStart(2, '0')}</span>${resultBadge(item)}</button>`).join('')}</div>${step ? renderStep(step, selected) : ''}<div class="player-controls"><button class="button secondary" data-action="previous" ${selected === 0 ? 'disabled' : ''}>← Previous</button><button class="button secondary" data-action="delete-step">Delete step</button><button class="button primary" data-action="next" ${selected >= session.steps.length - 1 ? 'disabled' : ''}>Next →</button></div><p class="keyboard-hint">Use ← and → to move through the replay.</p>` : `<div class="empty-state"><span aria-hidden="true">↳</span><h3>Your trail starts here.</h3><p>Add a command, file diff or reasoning note. Your tutor will see this exact sequence.</p></div>`}</div></section>${tutorLens()}<section class="bundle-bar"><div><h2>Move the replay, not your workspace.</h2><p>The export is a readable JSON file with chosen snapshots. Review it here on another device; no cloud upload needed.</p></div><div><label class="button secondary file-button">Import bundle<input class="visually-hidden" data-import type="file" accept=".json,.lesson-replay.json,application/json" /></label><button class="button primary" data-action="export" ${session.steps.length ? '' : 'disabled'}>Export bundle</button></div></section></main><footer><p>Private by design · no analytics · no arbitrary keystrokes</p><div><a href="https://remote-code-lesson-replay.sociobot.in/privacy" target="_blank">Privacy</a><a href="https://remote-code-lesson-replay.sociobot.in/terms" target="_blank">Terms</a><button class="link-button" data-action="show-license">License</button></div></footer>${renderLicenseDialog()}`;
+  const tabs = (['command', 'file', 'note'] as const).map((kind) => {
+    const label = kind === 'file' ? 'File diff' : kind[0]!.toUpperCase() + kind.slice(1);
+    return `<button id="tab-${kind}" role="tab" aria-controls="capture-panel-${kind}" aria-selected="${captureKind === kind}" tabindex="${captureKind === kind ? '0' : '-1'}" data-kind="${kind}">${label}</button>`;
+  }).join('');
+  return `<header class="app-header"><a class="brand" href="#main"><img src="/icons/icon-48.png" width="40" height="40" alt="" />Code Lesson Replay</a><div class="header-actions"><span class="local-pill">Saved locally</span><button class="button secondary compact" data-action="new">New</button><button class="button primary compact" data-action="export" ${session.steps.length ? '' : 'disabled'}>Export bundle</button></div></header><main id="main" class="studio"><section class="session-head"><div><span class="eyebrow">Current replay · ${escapeHtml(session.student || 'student')}</span><h1>${escapeHtml(session.title)}</h1><p>${escapeHtml(session.goal || 'Capture the decision trail, one chosen step at a time.')}</p></div><div class="session-stats"><strong>${session.steps.length}</strong><span>${session.steps.length === 1 ? 'step' : 'steps'}</span></div></section>${renderNotice()}<section class="work-grid"><div class="capture-panel"><div class="panel-heading"><div><span class="eyebrow">Student desk</span><h2>Add only what matters</h2></div><span class="privacy-mark">● opt-in</span></div><div class="tabs" role="tablist" aria-label="Step type">${tabs}</div><div id="capture-panel-${captureKind}" role="tabpanel" aria-labelledby="tab-${captureKind}">${renderCaptureForm()}</div></div><div class="play-panel"><div class="panel-heading"><div><span class="eyebrow">Tutor playback</span><h2>Decision trail</h2></div>${session.steps.length ? `<span class="step-counter">${selected + 1} / ${session.steps.length}</span>` : ''}</div>${session.steps.length ? `<div class="timeline" aria-label="Replay steps">${session.steps.map((item, index) => `<button type="button" data-select="${index}" aria-current="${index === selected ? 'step' : 'false'}" aria-label="Step ${index + 1}: ${escapeHtml(stepLabel(item))}"><span>${String(index + 1).padStart(2, '0')}</span>${resultBadge(item)}</button>`).join('')}</div>${step ? renderStep(step, selected) : ''}<div class="player-controls"><button class="button secondary" data-action="previous" ${selected === 0 ? 'disabled' : ''}>← Previous</button><button class="button secondary" data-action="delete-step">Delete step</button><button class="button primary" data-action="next" ${selected >= session.steps.length - 1 ? 'disabled' : ''}>Next →</button></div><p class="keyboard-hint">Use ← and → to move through the replay.</p>` : `<div class="empty-state"><span aria-hidden="true">↳</span><h3>Your trail starts here.</h3><p>Add a command, file diff or reasoning note. Your tutor will see this exact sequence.</p></div>`}</div></section>${tutorLens()}<section class="bundle-bar"><div><h2>Move the replay, not your workspace.</h2><p>The export is a readable JSON file with chosen snapshots. Review it here on another device; no cloud upload needed.</p></div><div><label class="button secondary file-button">Import bundle<input class="visually-hidden" data-import type="file" accept=".json,.lesson-replay.json,application/json" /></label><button class="button primary" data-action="export" ${session.steps.length ? '' : 'disabled'}>Export bundle</button></div></section></main><footer><p>Private by design · no analytics · no arbitrary keystrokes</p><div><a href="https://remote-code-lesson-replay.sociobot.in/privacy" target="_blank">Privacy</a><a href="https://remote-code-lesson-replay.sociobot.in/terms" target="_blank">Terms</a><button class="link-button" data-action="show-license">License</button></div></footer>${renderLicenseDialog()}`;
 }
 
 function render(): void {
@@ -194,7 +204,14 @@ app.addEventListener('submit', async (event) => {
   event.preventDefault();
   const data = new FormData(form);
   if (form.id === 'new-session-form') {
-    session = newSession(String(data.get('title')), String(data.get('student')), String(data.get('goal')));
+    const titleInput = form.elements.namedItem('title') as HTMLInputElement;
+    if (!titleInput.value.trim()) {
+      titleInput.setCustomValidity('Enter a replay title with at least one visible character.');
+      titleInput.reportValidity();
+      return;
+    }
+    titleInput.setCustomValidity('');
+    session = newSession(titleInput.value, String(data.get('student')), String(data.get('goal')));
     selected = 0;
     await saveSession();
     setNotice('Private replay started. Nothing is captured until you add a step.', 'success');
@@ -239,12 +256,22 @@ app.addEventListener('change', (event) => {
   if (input.matches('[data-import]') && input.files?.[0]) void importFile(input.files[0]);
 });
 
+app.addEventListener('input', (event) => {
+  const input = event.target as HTMLInputElement;
+  if (input.name === 'title') input.setCustomValidity('');
+});
+
+function activateCaptureKind(kind: ReplayStep['kind']): void {
+  captureKind = kind;
+  render();
+  document.querySelector<HTMLElement>(`[data-kind="${kind}"]`)?.focus();
+}
+
 app.addEventListener('click', async (event) => {
   const target = (event.target as HTMLElement).closest<HTMLElement>('[data-action], [data-kind], [data-select]');
   if (!target) return;
   if (target.dataset.kind) {
-    captureKind = target.dataset.kind as ReplayStep['kind'];
-    render();
+    activateCaptureKind(target.dataset.kind as ReplayStep['kind']);
     return;
   }
   if (target.dataset.select) {
@@ -279,6 +306,16 @@ app.addEventListener('click', async (event) => {
 });
 
 window.addEventListener('keydown', (event) => {
+  const target = event.target as HTMLElement;
+  const tab = target.closest<HTMLElement>('[role="tab"]');
+  if (tab && ['ArrowLeft', 'ArrowRight', 'Home', 'End'].includes(event.key)) {
+    const tabs = [...document.querySelectorAll<HTMLElement>('[role="tab"]')];
+    const current = tabs.indexOf(tab);
+    const next = event.key === 'Home' ? 0 : event.key === 'End' ? tabs.length - 1 : (current + (event.key === 'ArrowRight' ? 1 : -1) + tabs.length) % tabs.length;
+    event.preventDefault();
+    activateCaptureKind(tabs[next]!.dataset.kind as ReplayStep['kind']);
+    return;
+  }
   if (!session?.steps.length || (event.target as HTMLElement).matches('input, textarea, select')) return;
   if (event.key === 'ArrowLeft' && selected > 0) { selected -= 1; render(); }
   if (event.key === 'ArrowRight' && selected < session.steps.length - 1) { selected += 1; render(); }

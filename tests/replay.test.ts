@@ -45,4 +45,11 @@ describe('bundle format', () => {
     bundle.session.steps = [{ kind: 'command' } as never];
     expect(() => parseBundle(JSON.stringify(bundle))).toThrow(/invalid or unsupported step/);
   });
+
+  it('rejects whitespace-only titles for new and imported replays', () => {
+    expect(() => newSession('   \n  ')).toThrow(/visible character/);
+    const bundle = toBundle(newSession('Valid lesson'));
+    bundle.session.title = '   ';
+    expect(() => parseBundle(JSON.stringify(bundle))).toThrow(/required session details/);
+  });
 });
