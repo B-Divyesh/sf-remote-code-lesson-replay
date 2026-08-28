@@ -92,9 +92,9 @@ function resultBadge(step: ReplayStep): string {
 }
 
 function renderDiff(step: FileStep): string {
-  return `<div class="diff" role="table" aria-label="Changes in ${escapeHtml(step.fileName)}">${step.diff.map((line) => {
+  return `<div class="diff" role="list" aria-label="Changes in ${escapeHtml(step.fileName)}">${step.diff.map((line) => {
     const prefix = line.type === 'add' ? '+' : line.type === 'remove' ? '−' : ' ';
-    return `<div class="diff-line diff-${line.type}" role="row"><span aria-hidden="true">${prefix}</span><code>${escapeHtml(line.text || ' ')}</code><span class="sr-only">${line.type}</span></div>`;
+    return `<div class="diff-line diff-${line.type}" role="listitem"><span aria-hidden="true">${prefix}</span><code>${escapeHtml(line.text || ' ')}</code><span class="sr-only">${line.type}</span></div>`;
   }).join('')}</div>`;
 }
 

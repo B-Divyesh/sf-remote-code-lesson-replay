@@ -146,6 +146,7 @@ summary { min-height: 44px; padding: 10px 0; font-weight: 800; cursor: pointer; 
 
 .paid-callout, .lens, .bundle-bar { margin-top: 40px; padding: clamp(24px, 4vw, 40px); border: 3px solid var(--ink); box-shadow: 7px 7px 0 var(--ink); }
 .paid-callout { display: grid; grid-template-columns: 1fr auto; align-items: center; gap: 32px; background: var(--coral); }
+.paid-callout .eyebrow { color: var(--ink); }
 .paid-callout p { margin-bottom: 0; }
 .paid-actions { display: grid; gap: 8px; min-width: 220px; }
 .lens { background: var(--cyan); }

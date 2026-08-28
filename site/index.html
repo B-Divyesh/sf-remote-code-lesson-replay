@@ -1,0 +1,150 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="theme-color" content="#f4f0e6" />
+    <meta name="description" content="Capture a student's chosen commands, output, file diffs and hypotheses in a private text replay for their programming tutor." />
+    <meta property="og:title" content="Code Lesson Replay" />
+    <meta property="og:description" content="Replay the reasoning, not the whole screen." />
+    <meta property="og:image" content="/assets/replay-bench.webp" />
+    <title>Code Lesson Replay — private coding reasoning replays</title>
+    <link rel="icon" href="/icons/icon-32.png" />
+    <link rel="stylesheet" href="/site.css" />
+  </head>
+  <body>
+    <a class="skip-link" href="#main">Skip to main content</a>
+    <div class="offline-banner" id="offline-banner" role="status" hidden>You’re offline. This page still works; checkout and license verification need a connection.</div>
+    <header class="site-header">
+      <a class="brand" href="/" aria-label="Code Lesson Replay home"><img src="/icons/icon-48.png" width="40" height="40" alt="" /> <span>Code Lesson Replay</span></a>
+      <nav aria-label="Main navigation">
+        <a href="#how">How it works</a>
+        <a href="#privacy">Privacy</a>
+        <a href="#pricing">Plus</a>
+      </nav>
+      <a class="button small" href="/downloads/code-lesson-replay.zip" download>Download extension</a>
+    </header>
+    <main id="main">
+      <section class="hero">
+        <div class="hero-copy">
+          <p class="eyebrow">For students + remote programming tutors</p>
+          <h1>Replay the <mark>reasoning</mark>.<br />Not the whole screen.</h1>
+          <p class="lede">Capture a short, student-controlled trail of commands, chosen output, file diffs and hypotheses. Your tutor reviews the decisions in minutes—without a call recording.</p>
+          <div class="hero-actions">
+            <a class="button primary" href="/downloads/code-lesson-replay.zip" download>Download for Chrome <span aria-hidden="true">↓</span></a>
+            <a class="text-link" href="#how">See the 3-step flow</a>
+          </div>
+          <p class="compatibility">Manifest V3 · Chrome, Edge, Brave · local-first</p>
+        </div>
+        <figure class="hero-art">
+          <span class="art-label">A five-minute lesson, cut into useful moments</span>
+          <picture>
+            <source srcset="/assets/replay-bench.avif" type="image/avif" />
+            <source srcset="/assets/replay-bench.webp" type="image/webp" />
+            <img src="/assets/replay-bench.webp" width="1280" height="853" fetchpriority="high" decoding="async" alt="Paper-cut illustration of a code review timeline connecting terminal snippets, diffs, a hypothesis tab, and result markers." />
+          </picture>
+        </figure>
+      </section>
+
+      <section class="proof-strip" aria-label="Product boundaries">
+        <p><strong>Captures</strong> chosen command + output</p>
+        <p><strong>Preserves</strong> named file snapshots</p>
+        <p><strong>Never records</strong> webcam, audio or keystrokes</p>
+      </section>
+
+      <section class="section flow" id="how" aria-labelledby="how-title">
+        <div class="section-intro">
+          <p class="eyebrow">A useful trail, not a data exhaust</p>
+          <h2 id="how-title">From “it broke” to the exact first wrong turn.</h2>
+          <p>Each step pairs evidence with the student’s expectation. That makes a replay readable as reasoning, not just a wall of logs.</p>
+        </div>
+        <ol class="flow-list">
+          <li><span class="flow-no">01</span><div><h3>Choose the evidence</h3><p>Paste one command and only the output that matters, or add named before/after file snapshots.</p></div></li>
+          <li><span class="flow-no">02</span><div><h3>Name the hypothesis</h3><p>Write what you expected before the run and what the result changed. Secrets are masked before saving.</p></div></li>
+          <li><span class="flow-no">03</span><div><h3>Export one local bundle</h3><p>Send a readable JSON file. Your tutor imports it, uses arrow keys to replay, and sees original snapshots.</p></div></li>
+        </ol>
+      </section>
+
+      <section class="section specimen" aria-labelledby="specimen-title">
+        <div class="specimen-copy">
+          <p class="eyebrow">The tutor view</p>
+          <h2 id="specimen-title">Failure beside hypothesis. Context intact.</h2>
+          <p>The evidence stays anchored to the thought that produced it. File diffs keep both source snapshots, so rendered highlights never become the only record.</p>
+          <ul class="check-list">
+            <li>Left/right keyboard playback</li>
+            <li>Visible skipped-private-command gaps</li>
+            <li>Import errors with a next step</li>
+            <li>Offline after installation</li>
+          </ul>
+        </div>
+        <div class="replay-specimen" aria-label="Example replay step">
+          <div class="specimen-top"><span>STEP 02 / 04</span><span class="tag failed">failed</span></div>
+          <h3>npm test -- cart</h3>
+          <div class="hypothesis"><strong>Student hypothesis</strong><p>“The reducer runs twice because the removed item is still in state.”</p></div>
+          <pre><code>Expected: 18
+Received: 36
+
+at cartTotal (cart.test.ts:42)</code></pre>
+          <p class="mask-note">▨ 1 sensitive value masked before saving</p>
+          <div class="mini-timeline" aria-hidden="true"><i></i><i class="active"></i><i></i><i></i></div>
+        </div>
+      </section>
+
+      <section class="section privacy" id="privacy" aria-labelledby="privacy-title">
+        <div>
+          <p class="eyebrow">Privacy is the architecture</p>
+          <h2 id="privacy-title">Your lesson stays on your machine.</h2>
+        </div>
+        <div class="privacy-grid">
+          <article><span aria-hidden="true">01</span><h3>Explicit input only</h3><p>No page scraping, arbitrary keystrokes, camera, microphone, screen capture or remote control.</p></article>
+          <article><span aria-hidden="true">02</span><h3>Scrub before save</h3><p>Common tokens, credentials and your extra one-step mask words are replaced before local persistence.</p></article>
+          <article><span aria-hidden="true">03</span><h3>Portable, inspectable file</h3><p>The export is ordinary JSON. Read it, archive it or delete it without an account or proprietary cloud.</p></article>
+        </div>
+        <a class="text-link" href="/privacy/">Read the plain-language privacy policy</a>
+      </section>
+
+      <section class="section price-section" id="pricing" aria-labelledby="price-title">
+        <div class="price-copy">
+          <p class="eyebrow">One purchase. No per-seat meter.</p>
+          <h2 id="price-title">The full recorder is free.<br />Plus makes review faster.</h2>
+          <p>Capture unlimited steps, mask secrets, preserve snapshots, import and export for free. Plus adds Tutor Lens: a hypothesis map and print-ready lesson debrief.</p>
+          <p class="legal-note">Sociobot/Dodo is the merchant of record. Refunds are handled there and revoke the license automatically. By purchasing, you agree to the <a href="/terms/">terms</a> and <a href="/privacy/">privacy policy</a>.</p>
+        </div>
+        <aside class="price-card" aria-label="Code Lesson Replay Plus">
+          <span class="price-tab">PLUS</span>
+          <p class="price"><strong>$19</strong> USD</p>
+          <p>one-time purchase</p>
+          <ul>
+            <li>Hypothesis-only review map</li>
+            <li>Failure jump list</li>
+            <li>Print-ready lesson debrief</li>
+            <li>Use on your own browsers</li>
+          </ul>
+          <a class="button dark full" data-checkout href="https://pilot-api.sociobot.in/api/v1/products/remote-code-lesson-replay/checkout">Buy Plus once</a>
+          <button class="restore-toggle" id="restore-toggle" type="button" aria-expanded="false" aria-controls="restore-panel">Have a license? Restore it</button>
+          <div id="restore-panel" hidden>
+            <form id="restore-form">
+              <label for="license">License token</label>
+              <input id="license" name="license" required autocomplete="off" />
+              <button class="button primary full" type="submit">Verify license</button>
+            </form>
+          </div>
+          <p id="license-status" class="license-status" role="status">The free tools never wait on license checks.</p>
+        </aside>
+      </section>
+
+      <section class="section install" aria-labelledby="install-title">
+        <div><p class="eyebrow">Install in under a minute</p><h2 id="install-title">Unzip. Load unpacked. Start a replay.</h2></div>
+        <ol><li>Download and unzip the extension.</li><li>Open <code>chrome://extensions</code> and enable Developer mode.</li><li>Choose “Load unpacked” and select the unzipped folder.</li></ol>
+        <a class="button primary" href="/downloads/code-lesson-replay.zip" download>Download v1.0.0</a>
+      </section>
+    </main>
+    <footer>
+      <div class="brand"><img src="/icons/icon-48.png" width="40" height="40" alt="" /> <span>Code Lesson Replay</span></div>
+      <p>A small, private utility for asynchronous coding lessons.</p>
+      <nav aria-label="Footer navigation"><a href="/privacy/">Privacy</a><a href="/terms/">Terms</a><a href="https://github.com/B-Divyesh/sf-remote-code-lesson-replay">Source</a></nav>
+      <p class="disclosure">Hero imagery was generated for this product with the Factory image model. No people or real lesson data are depicted.</p>
+    </footer>
+    <script type="module" src="/main.ts"></script>
+  </body>
+</html>

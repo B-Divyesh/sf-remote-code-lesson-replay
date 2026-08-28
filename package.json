@@ -13,7 +13,7 @@
     "build": "npm run clean && npm run build:extension && npm run build:site && npm run package",
     "package": "wxt zip && node scripts/package-extension.mjs",
     "test:unit": "vitest run",
-    "test:e2e": "playwright test",
+    "test:e2e": "npm run build:extension && playwright test",
     "test": "npm run test:unit && npm run test:e2e",
     "typecheck": "tsc --noEmit"
   },
