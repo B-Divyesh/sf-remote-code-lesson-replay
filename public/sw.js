@@ -1,5 +1,5 @@
 const CACHE = 'lesson-replay-site-v1';
-const SHELL = ['/', '/privacy/', '/terms/', '/assets/replay-bench.webp', '/icons/icon-48.png'];
+const SHELL = ['/', '/privacy/', '/terms/', '/assets/replay-bench.webp', '/icons/icon-128.png'];
 
 self.addEventListener('install', (event) => {
   event.waitUntil(caches.open(CACHE).then((cache) => cache.addAll(SHELL)).then(() => self.skipWaiting()));

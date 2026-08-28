@@ -170,6 +170,21 @@ function isString(value: unknown): value is string {
   return typeof value === 'string';
 }
 
+function isValidStep(value: unknown): value is ReplayStep {
+  if (!value || typeof value !== 'object') return false;
+  const step = value as Partial<ReplayStep>;
+  if (!isString(step.id) || !isString(step.at) || !isString(step.annotation) || !isString(step.hypothesis) || typeof step.maskedCount !== 'number' || step.maskedCount < 0) return false;
+  if (step.kind === 'command') {
+    return isString(step.command) && isString(step.output) && ['passed', 'failed', 'unknown'].includes(step.result ?? '') && (step.exitCode === null || Number.isFinite(step.exitCode));
+  }
+  if (step.kind === 'file') {
+    return isString(step.fileName) && isString(step.before) && isString(step.after) && Array.isArray(step.diff) && step.diff.length <= 5_000 && step.diff.every((line) => line && ['same', 'add', 'remove'].includes(line.type) && isString(line.text));
+  }
+  if (step.kind === 'note') return isString(step.note);
+  if (step.kind === 'excluded') return isString(step.reason);
+  return false;
+}
+
 export function parseBundle(raw: string): ReplayBundle {
   if (new TextEncoder().encode(raw).byteLength > MAX_BUNDLE_BYTES) {
     throw new Error('That file is over 5 MB. Ask the student to split the replay into shorter sessions.');
@@ -185,13 +200,12 @@ export function parseBundle(raw: string): ReplayBundle {
   if (bundle.schema !== REPLAY_SCHEMA || bundle.generator !== 'Code Lesson Replay' || !session) {
     throw new Error('This is not a Code Lesson Replay v1 bundle.');
   }
-  if (!isString(session.id) || !isString(session.title) || !isString(session.createdAt) || !Array.isArray(session.steps)) {
+  if (!isString(bundle.exportedAt) || !isString(session.id) || !isString(session.title) || !isString(session.student) || !isString(session.goal) || !isString(session.createdAt) || !isString(session.updatedAt) || session.source !== 'manual-opt-in' || !Array.isArray(session.steps)) {
     throw new Error('The replay bundle is missing required session details.');
   }
   if (session.steps.length > 500) throw new Error('This replay has more than 500 steps and cannot be opened safely.');
-  const allowed = new Set<StepKind>(['command', 'file', 'note', 'excluded']);
-  if (session.steps.some((step) => !step || typeof step !== 'object' || !allowed.has((step as ReplayStep).kind))) {
-    throw new Error('The replay contains an unsupported step type.');
+  if (session.steps.some((step) => !isValidStep(step))) {
+    throw new Error('The replay contains an invalid or unsupported step.');
   }
   return bundle as ReplayBundle;
 }

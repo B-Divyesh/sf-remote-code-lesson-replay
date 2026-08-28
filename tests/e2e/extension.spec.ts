@@ -43,6 +43,16 @@ test('extension captures, scrubs, diffs, and replays a lesson locally', async ({
     await page.getByRole('button', { name: 'Add file diff' }).click();
     await expect(page.getByText('const total = 36;', { exact: true }).first()).toBeVisible();
 
+    await page.route('**/verify?license=valid-test-license', (route) => route.fulfill({
+      status: 200,
+      contentType: 'application/json',
+      body: JSON.stringify({ valid: true, reason: 'ok', expires_at: null })
+    }));
+    await page.getByRole('button', { name: 'I have a license' }).click();
+    await page.getByLabel('License token').fill('valid-test-license');
+    await page.getByRole('button', { name: 'Verify license' }).click();
+    await expect(page.getByText('Tutor Lens · unlocked')).toBeVisible();
+
     const results = await new AxeBuilder({ page }).analyze();
     expect(results.violations.filter((violation) => ['serious', 'critical'].includes(violation.impact ?? ''))).toEqual([]);
     expect(consoleErrors).toEqual([]);

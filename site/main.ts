@@ -27,13 +27,21 @@ function setLicenseStatus(message: string, tone: 'plain' | 'good' | 'bad' = 'pla
   status.dataset.tone = tone;
 }
 
+function showLicenseTransfer(show: boolean): void {
+  const copy = document.querySelector<HTMLButtonElement>('#copy-license');
+  const note = document.querySelector<HTMLElement>('#transfer-note');
+  if (copy) copy.hidden = !show;
+  if (note) note.hidden = !show;
+}
+
 async function reconcileLicense(force = false): Promise<void> {
   const optimistic = getOptimisticLicenseState();
   if (!optimistic.token) return;
   setLicenseStatus(optimistic.unlocked ? 'Plus is unlocked from your last verified purchase.' : 'Checking this license…');
   const result = await verifyLicense(force);
   if (result.unlocked) {
-    setLicenseStatus(result.reason === 'offline-cached' ? 'Plus is unlocked from the cached verdict while offline.' : 'License verified. Plus is unlocked on this website.', 'good');
+    setLicenseStatus(result.reason === 'offline-cached' ? 'Plus is unlocked from the cached verdict while offline.' : 'License verified. Plus is ready to activate in the extension.', 'good');
+    showLicenseTransfer(true);
   } else if (result.reason === 'offline-unverified') {
     setLicenseStatus('Connect once to verify this license.', 'bad');
   } else {
@@ -52,7 +60,24 @@ document.querySelector<HTMLFormElement>('#restore-form')?.addEventListener('subm
   }
 });
 
-if (acceptLicenseFromUrl()) setLicenseStatus('Payment return received. Checking your license…');
+document.querySelector<HTMLButtonElement>('#copy-license')?.addEventListener('click', async () => {
+  const token = getOptimisticLicenseState().token;
+  if (!token) return;
+  try {
+    await navigator.clipboard.writeText(token);
+    setLicenseStatus('License copied. Open the extension, choose “License,” and paste it.', 'good');
+  } catch {
+    const input = document.querySelector<HTMLInputElement>('#license');
+    if (input) { input.value = token; input.select(); }
+    setLicenseStatus('Copy was blocked. The token is selected above—copy it, then paste it into the extension.', 'bad');
+  }
+});
+
+if (acceptLicenseFromUrl()) {
+  setLicenseStatus('Payment return received. Checking your license…');
+  if (restorePanel) restorePanel.hidden = false;
+  restoreToggle?.setAttribute('aria-expanded', 'true');
+}
 void reconcileLicense();
 
 if ('serviceWorker' in navigator && import.meta.env.PROD) {

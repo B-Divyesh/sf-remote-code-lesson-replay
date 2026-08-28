@@ -1,0 +1,4 @@
+User-agent: *
+Allow: /
+
+Sitemap: https://remote-code-lesson-replay.sociobot.in/sitemap.xml

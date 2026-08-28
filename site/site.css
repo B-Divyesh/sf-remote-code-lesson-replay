@@ -86,6 +86,8 @@ pre { max-width:100%; padding:18px; overflow:auto; border:2px solid var(--ink); 
 #restore-panel label { font-weight:800; }
 input { min-height:48px; width:100%; padding:10px; border:2px solid var(--ink); background:var(--white); }
 .license-status { margin:14px 0 0; font-size:12px; }
+.copy-license { margin-top:10px; background:var(--cyan); }
+.transfer-note { margin:8px 0 0; font-size:12px; }
 .license-status[data-tone="good"] { color:#145b34; font-weight:800; }
 .license-status[data-tone="bad"] { color:#7a1f11; font-weight:800; }
 .install { display:grid; grid-template-columns:1fr 1fr auto; align-items:center; gap:44px; border-top:3px solid var(--ink); }

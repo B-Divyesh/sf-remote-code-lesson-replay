@@ -150,6 +150,7 @@ summary { min-height: 44px; padding: 10px 0; font-weight: 800; cursor: pointer; 
 .paid-callout p { margin-bottom: 0; }
 .paid-actions { display: grid; gap: 8px; min-width: 220px; }
 .lens { background: var(--cyan); }
+.lens .eyebrow { color: var(--ink); }
 .lens-list { display: grid; gap: 8px; padding: 0; list-style: none; counter-reset: none; }
 .lens-list button { display: grid; grid-template-columns: 36px 1fr auto; align-items: center; gap: 10px; width: 100%; min-height: 52px; padding: 8px; border: var(--border); background: var(--white); text-align: left; cursor: pointer; }
 .lens-list button > span:first-child { display: grid; place-items: center; width: 32px; height: 32px; background: var(--signal); font: 800 12px/1 ui-monospace, monospace; }

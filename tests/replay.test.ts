@@ -39,4 +39,10 @@ describe('bundle format', () => {
   it('rejects unrelated JSON', () => {
     expect(() => parseBundle('{"hello":"world"}')).toThrow(/not a Code Lesson Replay/);
   });
+
+  it('rejects malformed steps even when the schema label is valid', () => {
+    const bundle = toBundle(newSession('Broken lesson'));
+    bundle.session.steps = [{ kind: 'command' } as never];
+    expect(() => parseBundle(JSON.stringify(bundle))).toThrow(/invalid or unsupported step/);
+  });
 });
