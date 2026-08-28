@@ -13,6 +13,9 @@
     }
   ],
   "navigationFallback": { "rewrite": "/index.html", "exclude": ["/assets/*", "/icons/*", "/downloads/*", "*.css", "*.js", "*.json"] },
+  "responseOverrides": {
+    "404": { "rewrite": "/404.html", "statusCode": 404 }
+  },
   "globalHeaders": {
     "Content-Security-Policy": "default-src 'self'; img-src 'self' data:; style-src 'self'; script-src 'self'; connect-src 'self' https://api.sociobot.in; frame-ancestors 'none'; base-uri 'self'; form-action 'self' https://api.sociobot.in",
     "Referrer-Policy": "strict-origin-when-cross-origin",

@@ -21,7 +21,7 @@ const imageAssets = await Promise.all([
   fingerprintPublicAsset('replay-bench.webp')
 ]);
 
-const htmlFiles = ['index.html', 'privacy/index.html', 'terms/index.html'];
+const htmlFiles = ['index.html', '404.html', 'privacy/index.html', 'terms/index.html'];
 for (const file of htmlFiles) {
   const path = new URL(file, site);
   let html = await readFile(path, 'utf8');

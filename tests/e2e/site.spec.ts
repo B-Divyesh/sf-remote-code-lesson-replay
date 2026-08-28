@@ -21,17 +21,27 @@ test('landing page explains and delivers the product', async ({ page }) => {
   expect([...origins]).toEqual(['http://127.0.0.1:4173']);
 });
 
-test('release uses production billing and declares immutable asset policy', async ({ page }) => {
+test('release uses production billing and a self-hosted policy-protected 404 response', async ({ page }) => {
   await page.goto('/');
   await expect(page.getByRole('link', { name: 'Buy Plus once' })).toHaveAttribute('href', 'https://api.sociobot.in/api/v1/products/remote-code-lesson-replay/checkout');
 
   const config = JSON.parse(await readFile(join(process.cwd(), 'dist/site/staticwebapp.config.json'), 'utf8')) as {
     routes: Array<{ route: string; headers: Record<string, string> }>;
     mimeTypes: Record<string, string>;
+    responseOverrides: Record<string, { rewrite: string; statusCode: number }>;
+    globalHeaders: Record<string, string>;
   };
   expect(config.routes.find((route) => route.route === '/assets/*')?.headers['Cache-Control']).toBe('public, max-age=31536000, immutable');
   expect(config.mimeTypes['.avif']).toBe('image/avif');
   expect(config.mimeTypes['.zip']).toBe('application/zip');
+  expect(config.responseOverrides['404']).toEqual({ rewrite: '/404.html', statusCode: 404 });
+  expect(config.globalHeaders['Content-Security-Policy']).toContain("default-src 'self'");
+  expect(config.globalHeaders['X-Content-Type-Options']).toBe('nosniff');
+  expect(config.globalHeaders['Referrer-Policy']).toBe('strict-origin-when-cross-origin');
+
+  const notFound = await readFile(join(process.cwd(), 'dist/site/404.html'), 'utf8');
+  expect(notFound).toContain('<h1>That replay slip is missing.</h1>');
+  expect(notFound).not.toMatch(/https?:\/\/(?!remote-code-lesson-replay\.sociobot\.in)/i);
 });
 
 test('restore purchase is keyboard-accessible and keeps the free state visible', async ({ page }) => {
@@ -69,6 +79,8 @@ test('home and legal pages have no serious accessibility violations', async ({ p
 test('layout fits the 390px viewport', async ({ page }, testInfo) => {
   test.skip(testInfo.project.name !== 'mobile', 'Mobile-only overflow check');
   await page.goto('/');
+  expect(await page.evaluate(() => Number.parseFloat(getComputedStyle(document.body).fontSize))).toBeGreaterThanOrEqual(17);
+  expect(await page.locator('.eyebrow').first().evaluate((element) => Number.parseFloat(getComputedStyle(element).fontSize))).toBeGreaterThanOrEqual(14);
   const sizes = await page.evaluate(() => ({ scroll: document.documentElement.scrollWidth, client: document.documentElement.clientWidth }));
   expect(sizes.scroll).toBeLessThanOrEqual(sizes.client);
   await expect(page.getByRole('heading', { level: 1 })).toBeVisible();

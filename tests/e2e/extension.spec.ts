@@ -89,6 +89,8 @@ test('extension captures, scrubs, diffs, and replays a lesson locally', async ({
     await expect(page.locator('main')).toHaveCount(1);
 
     await page.setViewportSize({ width: 390, height: 844 });
+    expect(await page.evaluate(() => Number.parseFloat(getComputedStyle(document.body).fontSize))).toBeGreaterThanOrEqual(17);
+    expect(await page.locator('.eyebrow').first().evaluate((element) => Number.parseFloat(getComputedStyle(element).fontSize))).toBeGreaterThanOrEqual(14);
     const undersized = await page.locator('a, button, label.file-button').evaluateAll((elements) => elements.flatMap((element) => {
       const rect = element.getBoundingClientRect();
       if (!rect.width || !rect.height) return [];
