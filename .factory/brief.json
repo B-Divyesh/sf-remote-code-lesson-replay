@@ -1,0 +1,30 @@
+{
+  "slug": "remote-code-lesson-replay",
+  "title": "Code Lesson Replay",
+  "territory": "utilities",
+  "user": "A remote programming tutor who needs to review a student's reasoning between live sessions without recording an entire screen call.",
+  "evidence": [
+    {
+      "url": "https://hn.algolia.com/api/v1/items/46862632",
+      "date": "2026-02-02",
+      "quote_or_summary": "A prospective instructor tool explicitly asks teachers and tutors about pain points with Zoom, Replit, and VS Code Live Share for remote coding lessons."
+    },
+    {
+      "url": "https://github.com/logseq/logseq/issues/12518",
+      "date": "2026-04-17",
+      "quote_or_summary": "A Logseq user reports incomplete rendering in the built-in PDF viewer, a reminder that study/lesson review must preserve the original artifact rather than rely on a fragile rendered view."
+    }
+  ],
+  "recurrence": "A direct tutor discovery thread and separate learning-artifact rendering failure highlight a recurring problem: context gets lost between the live explanation and later review.",
+  "current_workaround": "Record Zoom, ask for a Git commit, use screen shares, or reconstruct what the student tried from a final code snapshot.",
+  "incumbents_and_gap": "Zoom records too much, VS Code Live Share is synchronous, and Replit shares a workspace; none makes a short student-controlled sequence of run, failure, hypothesis, edit, and result easy to review asynchronously.",
+  "smallest_useful_product": "VS Code extension that records opt-in command/output and named file diffs into a local replay bundle with student annotations, playable as text by a tutor. Non-goals: remote control, keystroke surveillance, cloud IDE, or automatic code grading.",
+  "success_measure": "Tutors can identify a student's first wrong hypothesis from a five-minute replay in under three minutes, without a video call recording.",
+  "artifact_class": "browser-extension",
+  "monetization": "one-time — independent tutors need a small tool, not another per-seat collaboration subscription.",
+  "constraints": "Mask secrets and allow per-command exclusion; local bundle by default; never capture webcam/audio or arbitrary keystrokes; use documented VS Code APIs.",
+  "est_build_effort": "M",
+  "why_distinct": "It records learning decisions around code, not an always-on screen recording or another online IDE.",
+  "confidence": 3,
+  "state": "RESEARCHED"
+}
