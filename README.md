@@ -56,6 +56,8 @@ Release builds use `https://api.sociobot.in` for checkout and license verificati
 
 The product slug is used in the checkout and verification paths; no billing product ID or provider secret is embedded.
 
+Before a production release, run `npm run verify:billing`. It checks the public Sociobot production catalog for this exact $19 product and confirms that the Buy link returns a secure hosted-checkout redirect. This is deliberately a live release gate: it fails when factory billing registration is missing rather than allowing an advertised purchase flow to ship broken.
+
 ## Replay bundle
 
 Exports use the versioned `code-lesson-replay/v1` JSON schema and cap imports at 5 MB / 500 steps. The bundle preserves full masked before/after file snapshots alongside the computed diff. Treat a bundle like source code: inspect it before sharing and delete copies when no longer needed.
