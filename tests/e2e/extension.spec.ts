@@ -72,15 +72,27 @@ test('extension captures, scrubs, diffs, and replays a lesson locally', async ({
     await page.getByRole('button', { name: 'Add file diff' }).click();
     await expect(page.getByText('const total = 36;', { exact: true }).first()).toBeVisible();
 
+    let licenseVerdict: 'ok' | 'revoked' = 'ok';
     await page.route('https://api.sociobot.in/**/verify?license=valid-test-license', (route) => route.fulfill({
       status: 200,
       contentType: 'application/json',
-      body: JSON.stringify({ valid: true, reason: 'ok', expires_at: null })
+      body: JSON.stringify({ valid: licenseVerdict === 'ok', reason: licenseVerdict, expires_at: null })
     }));
     await page.getByRole('button', { name: 'I have a license' }).click();
     await page.getByLabel('License token').fill('valid-test-license');
     await page.getByRole('button', { name: 'Verify license' }).click();
     await expect(page.getByText('Tutor Lens · unlocked')).toBeVisible();
+
+    licenseVerdict = 'revoked';
+    await page.evaluate(() => {
+      const key = 'sb_license:remote-code-lesson-replay:verdict';
+      const cached = JSON.parse(localStorage.getItem(key) ?? '{}');
+      localStorage.setItem(key, JSON.stringify({ ...cached, checkedAt: 0 }));
+    });
+    await page.reload();
+    await expect(page.getByText('This license is no longer active. Plus is locked; your free replay tools still work.')).toBeVisible();
+    await expect(page.getByText('Tutor Lens · Plus')).toBeVisible();
+    await expect(page.getByText('Tutor Lens · unlocked')).toHaveCount(0);
 
     const results = await new AxeBuilder({ page }).analyze();
     expect(results.violations.filter((violation) => ['serious', 'critical'].includes(violation.impact ?? ''))).toEqual([]);

@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { assertCatalogProduct, assertCheckoutRedirect, product } from '../scripts/verify-billing.mjs';
+import { assertCatalogProduct, assertCheckoutRedirect, assertVerifyRateLimit, product, rateLimitProbeCount } from '../scripts/verify-billing.mjs';
 
 describe('production billing release contract', () => {
   it('rejects a catalog that does not register this exact paid product', () => {
@@ -21,5 +21,20 @@ describe('production billing release contract', () => {
       status: 303,
       headers: { location: 'https://checkout.example.test/session' }
     }))).not.toThrow();
+  });
+
+  it('rejects the verifier\'s 80-request no-rate-limit failure and requires Retry-After on 429', () => {
+    const allAccepted = Array.from({ length: rateLimitProbeCount }, () => new Response('{}', { status: 200 }));
+    expect(() => assertVerifyRateLimit(allAccepted)).toThrow(/accepted all 80 rapid invalid-license requests/);
+
+    expect(() => assertVerifyRateLimit([
+      new Response('{}', { status: 200 }),
+      new Response('{}', { status: 429 })
+    ])).toThrow(/without a positive Retry-After/);
+
+    expect(() => assertVerifyRateLimit([
+      new Response('{}', { status: 200 }),
+      new Response('{}', { status: 429, headers: { 'Retry-After': '3' } })
+    ])).not.toThrow();
   });
 });

@@ -326,6 +326,9 @@ async function start(): Promise<void> {
   await loadSession();
   render();
   license = await verifyLicense();
+  if (!license.unlocked && license.token && ['invalid', 'revoked', 'expired', 'wrong_product'].includes(license.reason)) {
+    setNotice('This license is no longer active. Plus is locked; your free replay tools still work.', 'info');
+  }
   render();
 }
 

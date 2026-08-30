@@ -56,7 +56,7 @@ Release builds use `https://api.sociobot.in` for checkout and license verificati
 
 The product slug is used in the checkout and verification paths; no billing product ID or provider secret is embedded.
 
-Before a production release, run `npm run verify:billing`. It checks the public Sociobot production catalog for this exact $19 product and confirms that the Buy link returns a secure hosted-checkout redirect. This is deliberately a live release gate: it fails when factory billing registration is missing rather than allowing an advertised purchase flow to ship broken.
+Before a production release, run `npm run verify:billing`. It checks the public Sociobot production catalog for this exact $19 product, confirms that the Buy link returns a secure hosted-checkout redirect, and sends 80 rapid invalid-license probes. At least one probe must receive `429` with a positive `Retry-After` header. This is deliberately a live release gate: it fails when factory billing registration or verification abuse protection is missing rather than allowing an advertised purchase flow to ship broken.
 
 ## Replay bundle
 
@@ -76,7 +76,7 @@ Automated masking is defense in depth, not a complete secret scanner. Keep priva
 
 ## Deployment
 
-Deploy `dist/site` as a static site. Do not deploy the repository root. Both `npm run build` and the work-order-facing `npm run build:site` create the complete directory, including the extension ZIP and a versioned offline worker. The included `staticwebapp.config.json` sets the navigation fallback, security headers, immutable asset caching, and AVIF/ZIP MIME types. The factory owns DNS and billing registration.
+Deploy `dist/site` as a static site. Do not deploy the repository root. Both `npm run build` and the work-order-facing `npm run build:site` create the complete directory, including the extension ZIP and a versioned offline worker. The included `staticwebapp.config.json` sets a first-party 404 response, security headers, immutable asset caching, and AVIF/ZIP MIME types. The factory owns DNS and billing registration.
 
 ## License
 

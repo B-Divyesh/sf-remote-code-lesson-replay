@@ -14,6 +14,9 @@ export const product: {
   checkoutUrl: string;
 };
 
+export const rateLimitProbeCount: number;
 export function assertCatalogProduct(candidate: BillingProduct | undefined): void;
 export function assertCheckoutRedirect(response: Response): void;
+export function assertVerifyRateLimit(responses: Response[]): void;
+export function probeVerifyRateLimit(fetchImpl?: typeof fetch, base?: string): Promise<Response[]>;
 export function main(): Promise<void>;

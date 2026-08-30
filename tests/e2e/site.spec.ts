@@ -30,11 +30,13 @@ test('release uses production billing and a self-hosted policy-protected 404 res
     mimeTypes: Record<string, string>;
     responseOverrides: Record<string, { rewrite: string; statusCode: number }>;
     globalHeaders: Record<string, string>;
+    navigationFallback?: unknown;
   };
   expect(config.routes.find((route) => route.route === '/assets/*')?.headers['Cache-Control']).toBe('public, max-age=31536000, immutable');
   expect(config.mimeTypes['.avif']).toBe('image/avif');
   expect(config.mimeTypes['.zip']).toBe('application/zip');
   expect(config.responseOverrides['404']).toEqual({ rewrite: '/404.html', statusCode: 404 });
+  expect(config.navigationFallback).toBeUndefined();
   expect(config.globalHeaders['Content-Security-Policy']).toContain("default-src 'self'");
   expect(config.globalHeaders['X-Content-Type-Options']).toBe('nosniff');
   expect(config.globalHeaders['Referrer-Policy']).toBe('strict-origin-when-cross-origin');
@@ -54,11 +56,12 @@ test('restore purchase is keyboard-accessible and keeps the free state visible',
   await expect(page.getByText(/free tools never wait/i)).toBeVisible();
 });
 
-test('payment return stores, verifies, and offers the extension token', async ({ page }) => {
+test('payment return stores, restores, and revokes the Plus license without blocking free tools', async ({ page }) => {
+  let verdict: 'ok' | 'revoked' = 'ok';
   await page.route('**/verify?license=test-token', (route) => route.fulfill({
     status: 200,
     contentType: 'application/json',
-    body: JSON.stringify({ valid: true, reason: 'ok', expires_at: null })
+    body: JSON.stringify({ valid: verdict === 'ok', reason: verdict, expires_at: null })
   }));
   await page.goto('/?license=test-token#pricing');
   await expect(page).toHaveURL(/\/#pricing$/);
@@ -66,6 +69,21 @@ test('payment return stores, verifies, and offers the extension token', async ({
   await expect(page.getByRole('button', { name: 'Copy token for the extension' })).toBeVisible();
   const stored = await page.evaluate(() => localStorage.getItem('sb_license:remote-code-lesson-replay'));
   expect(stored).toBe('test-token');
+
+  await page.evaluate(() => {
+    localStorage.removeItem('sb_license:remote-code-lesson-replay');
+    localStorage.removeItem('sb_license:remote-code-lesson-replay:verdict');
+  });
+  await expect(page.getByRole('button', { name: /Have a license/ })).toHaveAttribute('aria-expanded', 'true');
+  await page.getByLabel('License token').fill('test-token');
+  await page.getByRole('button', { name: 'Verify license' }).click();
+  await expect(page.getByText('Plus is ready to activate in the extension.')).toBeVisible();
+
+  verdict = 'revoked';
+  await page.evaluate(() => localStorage.removeItem('sb_license:remote-code-lesson-replay:verdict'));
+  await page.reload();
+  await expect(page.getByText('This license is no longer active. Check the token or purchase Plus.')).toBeVisible();
+  await expect(page.getByText(/Capture unlimited steps, mask secrets, preserve snapshots, import and export for free/i)).toBeVisible();
 });
 
 test('home, legal, and not-found pages have no serious accessibility violations', async ({ page }) => {

@@ -1,5 +1,6 @@
 #!/usr/bin/env node
 
+import { randomUUID } from 'node:crypto';
 import { pathToFileURL } from 'node:url';
 
 export const product = {
@@ -12,6 +13,7 @@ export const product = {
 
 const billingBase = process.env.BILLING_BASE ?? 'https://api.sociobot.in';
 const timeout = AbortSignal.timeout(15_000);
+export const rateLimitProbeCount = 80;
 
 function fail(message) {
   throw new Error(`Billing release check failed: ${message}`);
@@ -40,6 +42,25 @@ export function assertCheckoutRedirect(response) {
   }
 }
 
+export function assertVerifyRateLimit(responses) {
+  const limited = responses.filter((response) => response.status === 429);
+  if (!limited.length) {
+    fail(`verify accepted all ${responses.length} rapid invalid-license requests; expected HTTP 429`);
+  }
+  for (const response of limited) {
+    const retryAfter = response.headers.get('retry-after');
+    if (!retryAfter || !/^\d+$/.test(retryAfter) || Number(retryAfter) < 1) {
+      fail('verify returned HTTP 429 without a positive Retry-After header');
+    }
+  }
+}
+
+export async function probeVerifyRateLimit(fetchImpl = fetch, base = billingBase) {
+  const license = `release-rate-probe-${randomUUID()}`;
+  const endpoint = `${base}/api/v1/products/${product.slug}/verify?license=${encodeURIComponent(license)}`;
+  return Promise.all(Array.from({ length: rateLimitProbeCount }, () => fetchImpl(endpoint, { signal: timeout })));
+}
+
 export async function main() {
   const catalogResponse = await fetch(`${billingBase}/api/v1/products`, { signal: timeout });
   if (!catalogResponse.ok) fail(`catalog returned HTTP ${catalogResponse.status}`);
@@ -52,7 +73,11 @@ export async function main() {
     signal: timeout
   });
   assertCheckoutRedirect(checkoutResponse);
-  console.log(`Billing release check passed for ${product.slug}.`);
+
+  const verifyResponses = await probeVerifyRateLimit();
+  assertVerifyRateLimit(verifyResponses);
+  const limited = verifyResponses.filter((response) => response.status === 429).length;
+  console.log(`Billing release check passed for ${product.slug}: checkout redirected and ${limited}/${rateLimitProbeCount} invalid-license probes returned 429 with Retry-After.`);
 }
 
 if (process.argv[1] && import.meta.url === pathToFileURL(process.argv[1]).href) {

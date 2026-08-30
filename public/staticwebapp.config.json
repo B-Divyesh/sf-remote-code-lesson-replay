@@ -12,7 +12,6 @@
       }
     }
   ],
-  "navigationFallback": { "rewrite": "/index.html", "exclude": ["/assets/*", "/icons/*", "/downloads/*", "*.css", "*.js", "*.json"] },
   "responseOverrides": {
     "404": { "rewrite": "/404.html", "statusCode": 404 }
   },
