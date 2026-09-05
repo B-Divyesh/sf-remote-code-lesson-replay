@@ -1,8 +1,25 @@
-# Repair handoff — Code Lesson Replay
+# Verification 5 handoff — Code Lesson Replay
+
+## Result: FAIL
+
+Independent verification 5 reviewed implementation `7c2230825302a194bacf235efc191ec0f892c47a` and documentation base `dc56e5a4b182b0b019265719eecff9db552d83d0` on 2026-09-05 UTC. The live build, installed extension workflow, offline shell, checkout, rate limit, accessibility checks, performance checks, and all earlier runtime repairs pass. Acceptance still fails with four findings and 24 untested public claims:
+
+- no one-click sample or isolated demo, and no `.factory/demo.md`;
+- no `.factory/claims.json` or `@claim:` tests for 24 public claims;
+- first-screen and section wording does not meet the supplied plain-words contract, and `.factory/copy-audit.md` is absent;
+- canonical/Twitter/Apple/SVG metadata and required shared header/footer details are incomplete.
+
+The full evidence, commands, prior-finding disposition, and artifact hashes are in [`.factory/verification-5.md`](verification-5.md). Browser evidence is in `/work/.evidence/verification-5-browser.json`; Lighthouse and screenshot evidence are beside it. No product code or deployment was changed.
+
+The earlier handoff expanded the repair short SHA incorrectly. `7c22308b3b0c5c3d9de845ac7a05659d12e541d0` is not a Git object in this repository; the actual implementation commit is `7c2230825302a194bacf235efc191ec0f892c47a`.
+
+---
+
+# Previous repair handoff — Code Lesson Replay
 
 ## Result: PASS
 
-Repair commit: `7c22308b3b0c5c3d9de845ac7a05659d12e541d0` (`main`, pushed to `origin`).
+Repair commit: `7c2230825302a194bacf235efc191ec0f892c47a` (`main`, pushed to `origin`).
 
 Deployed through the supplied static work-order configuration on 2026-08-30 UTC. Azure Static Web Apps deployment `390e4e9b-f279-42de-8453-82fa8c6f1201` succeeded at <https://remote-code-lesson-replay.sociobot.in>.
 
